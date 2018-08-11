@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-img = cv2.imread('org-3.png')
+img = cv2.imread('for_science4.jpg')
 
 
 def ancuti_journal(im):
@@ -31,11 +31,11 @@ def ancuti_journal(im):
 
 def white_balance_with_ancuti(img):
     img_red_blue_compensated = ancuti_journal(img)
-    result = gray_world_assumption(img_red_blue_compensated)
+    result = grey_world_assumption(img_red_blue_compensated)
     return result
 
 
-def gray_world_assumption(img):
+def grey_world_assumption(img):
     # img_red_compensated = ancuti_journal(img)
     result = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     avg_a = np.average(result[:, :, 1])
@@ -46,7 +46,7 @@ def gray_world_assumption(img):
     return result
 
 
-final = np.hstack((img, white_balance_with_ancuti(img), gray_world_assumption(img)))
+final = np.hstack((img, white_balance_with_ancuti(img), grey_world_assumption(img)))
 # final = white_balance(img)
 
 
