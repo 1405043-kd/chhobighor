@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-img = cv2.imread('for_science4.jpg')
+img = cv2.imread('org-3.png')
 
 
 def ancuti_journal(im):
@@ -46,7 +46,53 @@ def grey_world_assumption(img):
     return result
 
 
-final = np.hstack((img, white_balance_with_ancuti(img), grey_world_assumption(img)))
+def adjust_gamma(image, gamma):
+    img = image.copy()
+    invGamma = 1.0 / gamma
+    table = np.array([((i / 255.0) ** invGamma) * 255
+                      for i in np.arange(0, 256)]).astype("uint8")
+
+    return cv2.LUT(img, table)
+
+
+def unsharp_masking(img):
+    image = img.copy()
+    # norm_mask = image.copy()
+
+    gaussian_blur = cv2.GaussianBlur(image, (3, 3), 0)  # taking the blur image
+    g_mask = cv2.addWeighted(image, 1, gaussian_blur, -1, 0)  # subtracting from image to achieve mask
+
+    #histrogram stretching of the mask
+    img_yuv = cv2.cvtColor(g_mask, cv2.COLOR_BGR2YUV)
+    # equalize the histogram of the Y channel
+    img_yuv[:, :, 0] = cv2.equalizeHist(img_yuv[:, :, 0])
+    # convert the YUV image back to RGB format
+    g_mask_norm = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR)
+
+
+    #cv2.normalize(g_mask, norm_mask, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
+    image = cv2.addWeighted(image, 1, g_mask_norm, .25, 0)  # adding to initial image to get masked data
+
+
+    # as per paper, this normalized addition should again be divided by 2(but that seems a loss to me, so avoiding it for now)
+
+    # image = cv2.addWeighted(img, 1, g_mask, 1, 0)
+    # cv2.normalize(image, image, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
+    # return unsharp_image
+
+    #
+    # f = np.hstack((img, image, g_mask, norm_image))
+    # plt.imshow(f)
+    # plt.xticks([]), plt.yticks([])  # to hide tick values on X and Y axis
+    # plt.show()
+
+    return image
+
+
+white_balanced = white_balance_with_ancuti(img)
+gamma_adjusted = adjust_gamma(white_balanced, gamma=0.5)
+unsharp_masked = unsharp_masking(white_balanced)
+final = np.hstack((white_balanced, unsharp_masked, gamma_adjusted))
 # final = white_balance(img)
 
 
