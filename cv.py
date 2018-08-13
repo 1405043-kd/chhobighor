@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-img = cv2.imread('org-3.png')
+img = cv2.imread('org-1.jpg')
 
 
 def ancuti_journal(im):
@@ -62,17 +62,15 @@ def unsharp_masking(img):
     gaussian_blur = cv2.GaussianBlur(image, (3, 3), 0)  # taking the blur image
     g_mask = cv2.addWeighted(image, 1, gaussian_blur, -1, 0)  # subtracting from image to achieve mask
 
-    #histrogram stretching of the mask
+    # histrogram stretching of the mask
     img_yuv = cv2.cvtColor(g_mask, cv2.COLOR_BGR2YUV)
     # equalize the histogram of the Y channel
     img_yuv[:, :, 0] = cv2.equalizeHist(img_yuv[:, :, 0])
     # convert the YUV image back to RGB format
     g_mask_norm = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR)
 
-
-    #cv2.normalize(g_mask, norm_mask, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
-    image = cv2.addWeighted(image, 1, g_mask_norm, .25, 0)  # adding to initial image to get masked data
-
+    # cv2.normalize(g_mask, norm_mask, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
+    image = cv2.addWeighted(image, 1, g_mask_norm, .15, 0)  # adding to initial image to get masked data
 
     # as per paper, this normalized addition should again be divided by 2(but that seems a loss to me, so avoiding it for now)
 
@@ -89,10 +87,34 @@ def unsharp_masking(img):
     return image
 
 
+def laplacian_weight(img):
+    image = img.copy()
+    # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = cv2.Laplacian(image, cv2.CV_16S)
+    cv2.convertScaleAbs(image, image)
+    # image = cv2.addWeighted(image, 1, img, -1, 0)
+    return image
+
+
+def saliency_weight(img):
+    image = img.copy()
+
+    return image
+
+
+def saturation_weight(img):
+    image = img.copy()
+    lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
+    lab_image[:, :, 0] = (((image[:, :, 0] - lab_image[:, :, 0]) ** 2 + (image[:, :, 1] - lab_image[:, :, 0]) ** 2 + (
+                image[:, :, 2] - lab_image[:, :, 0]) ** 2) * (0.33)) ** (.5)
+    image = cv2.cvtColor(lab_image, cv2.COLOR_YCrCb2BGR)
+    return image
+
+
 white_balanced = white_balance_with_ancuti(img)
 gamma_adjusted = adjust_gamma(white_balanced, gamma=0.5)
 unsharp_masked = unsharp_masking(white_balanced)
-final = np.hstack((white_balanced, unsharp_masked, gamma_adjusted))
+final = np.hstack((white_balanced, unsharp_masked, gamma_adjusted, saturation_weight(unsharp_masked)))
 # final = white_balance(img)
 
 
