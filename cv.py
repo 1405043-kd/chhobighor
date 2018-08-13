@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-img = cv2.imread('org-1.jpg')
+img = cv2.imread('for_science7.jpg')
 
 
 def ancuti_journal(im):
@@ -59,7 +59,7 @@ def unsharp_masking(img):
     image = img.copy()
     # norm_mask = image.copy()
 
-    gaussian_blur = cv2.GaussianBlur(image, (3, 3), 0)  # taking the blur image
+    gaussian_blur = cv2.GaussianBlur(image, (3, 3), 3)  # taking the blur image
     g_mask = cv2.addWeighted(image, 1, gaussian_blur, -1, 0)  # subtracting from image to achieve mask
 
     # histrogram stretching of the mask
@@ -97,9 +97,51 @@ def laplacian_weight(img):
 
 
 def saliency_weight(img):
+    # #as per equation 7 described in achantay a
+    # image = img.copy()
+    # gaussian_blur = cv2.GaussianBlur(image, (3, 3), 3)
+    # #image_lab = cv2.cvtColor(image, cv2.COLOR_BGR2Lab)
+    # #image_lab_blur = cv2.cvtColor(gaussian_blur, cv2.COLOR_BGR2LAB)
+    #
+    # avg_b = np.average(image[:, :, 0])
+    # avg_g = np.average(image[:, :, 1])
+    # avg_r = np.average(image[:, :, 2])
+    #
+    # image[:, :, 0] = abs(avg_b-gaussian_blur[:, :, 0])
+    # image[:, :, 1] = abs(avg_g-gaussian_blur[:, :, 1])
+    # image[:, :, 2] = abs(avg_r-gaussian_blur[:, :, 2])
+    #
+    # #image_lab_blur = cv2.cvtColor(gaussian_blur, cv2.COLOR_LAB2BGR)
+    #
+    # return image
+
+
+
+
+    #as per equation 8 described in achantay et al.
+
     image = img.copy()
 
-    return image
+    gaussian_blur = cv2.GaussianBlur(image, (5, 5), 0)
+    #image_lab = cv2.cvtColor(image, cv2.COLOR_BGR2Lab)
+    #image_lab_blur = cv2.cvtColor(gaussian_blur, cv2.COLOR_BGR2Lab)
+    image_lab=image
+    image_lab_blur=gaussian_blur
+
+    cv2.transpose(image_lab, image_lab)
+
+    avg_l = np.average(image_lab[:, :, 0])
+    avg_a = np.average(image_lab[:, :, 1])
+    avg_b = np.average(image_lab[:, :, 2])
+
+
+    image_lab[:, :, 0] = (abs((avg_l)-(image_lab_blur[:, :, 0])))
+    image_lab[:, :, 1] = (abs((avg_a)-(image_lab_blur[:, :, 1])))
+    image_lab[:, :, 2] = (abs((avg_b)-(image_lab_blur[:, :, 2])))
+
+    return image_lab
+
+
 
 
 def saturation_weight(img):
@@ -114,7 +156,7 @@ def saturation_weight(img):
 white_balanced = white_balance_with_ancuti(img)
 gamma_adjusted = adjust_gamma(white_balanced, gamma=0.5)
 unsharp_masked = unsharp_masking(white_balanced)
-final = np.hstack((white_balanced, unsharp_masked, gamma_adjusted, saturation_weight(unsharp_masked)))
+final = np.hstack((gamma_adjusted, saturation_weight(gamma_adjusted), laplacian_weight(gamma_adjusted), saliency_weight(white_balanced)))
 # final = white_balance(img)
 
 
