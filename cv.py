@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-img = cv2.imread('for_science7.jpg')
+img = cv2.imread('im2.jpg')
 
 
 def ancuti_journal(im):
@@ -115,18 +115,15 @@ def saliency_weight(img):
     #
     # return image
 
-
-
-
-    #as per equation 8 described in achantay et al.
+    # as per equation 8 described in achantay et al.
 
     image = img.copy()
 
-    gaussian_blur = cv2.GaussianBlur(image, (5, 5), 0)
-    #image_lab = cv2.cvtColor(image, cv2.COLOR_BGR2Lab)
-    #image_lab_blur = cv2.cvtColor(gaussian_blur, cv2.COLOR_BGR2Lab)
-    image_lab=image
-    image_lab_blur=gaussian_blur
+    gaussian_blur = cv2.GaussianBlur(image, (3, 3), 3)
+    # image_lab = cv2.cvtColor(image, cv2.COLOR_BGR2Lab)
+    # image_lab_blur = cv2.cvtColor(gaussian_blur, cv2.COLOR_BGR2Lab)
+    image_lab = image
+    image_lab_blur = gaussian_blur
 
     cv2.transpose(image_lab, image_lab)
 
@@ -134,21 +131,20 @@ def saliency_weight(img):
     avg_a = np.average(image_lab[:, :, 1])
     avg_b = np.average(image_lab[:, :, 2])
 
+    image_lab[:, :, 0] = (abs((avg_l) - (image_lab_blur[:, :, 0])))
+    image_lab[:, :, 1] = (abs((avg_a) - (image_lab_blur[:, :, 1])))
+    image_lab[:, :, 2] = (abs((avg_b) - (image_lab_blur[:, :, 2])))
 
-    image_lab[:, :, 0] = (abs((avg_l)-(image_lab_blur[:, :, 0])))
-    image_lab[:, :, 1] = (abs((avg_a)-(image_lab_blur[:, :, 1])))
-    image_lab[:, :, 2] = (abs((avg_b)-(image_lab_blur[:, :, 2])))
+    # image_lab = cv2.cvtColor(image_lab, cv2.COLOR_Lab2BGR)
 
     return image_lab
-
-
 
 
 def saturation_weight(img):
     image = img.copy()
     lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
     lab_image[:, :, 0] = (((image[:, :, 0] - lab_image[:, :, 0]) ** 2 + (image[:, :, 1] - lab_image[:, :, 0]) ** 2 + (
-                image[:, :, 2] - lab_image[:, :, 0]) ** 2) * (0.33)) ** (.5)
+            image[:, :, 2] - lab_image[:, :, 0]) ** 2) * (0.33)) ** (.5)
     image = cv2.cvtColor(lab_image, cv2.COLOR_YCrCb2BGR)
     return image
 
@@ -156,7 +152,12 @@ def saturation_weight(img):
 white_balanced = white_balance_with_ancuti(img)
 gamma_adjusted = adjust_gamma(white_balanced, gamma=0.5)
 unsharp_masked = unsharp_masking(white_balanced)
-final = np.hstack((gamma_adjusted, saturation_weight(gamma_adjusted), laplacian_weight(gamma_adjusted), saliency_weight(white_balanced)))
+image_and_white_balanced = np.hstack((img, white_balanced))
+two_input = np.hstack((white_balanced, unsharp_masked, gamma_adjusted))
+gamma_weights = np.hstack((gamma_adjusted, laplacian_weight(gamma_adjusted), saliency_weight(gamma_adjusted),
+                           saturation_weight(gamma_adjusted)))
+unsharp_weights = np.hstack((unsharp_masked, laplacian_weight(unsharp_masked), saliency_weight(unsharp_masked),
+                             saturation_weight(unsharp_masked)))
 # final = white_balance(img)
 
 
@@ -164,9 +165,32 @@ final = np.hstack((gamma_adjusted, saturation_weight(gamma_adjusted), laplacian_
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
 
-final = final[:, :, ::-1]
-plt.imshow(final)
+image_and_white_balanced = image_and_white_balanced[:, :, ::-1]
+two_input = two_input[:, :, ::-1]
+gamma_weights = gamma_weights[:, :, ::-1]
+unsharp_weights = unsharp_weights[:, :, ::-1]
+
+
+plt.figure('Step 4: unsharp input weighted')
+plt.imshow(unsharp_weights)
+plt.title('Unsharp Masked, Laplacian Weight, Saliency Weight, Saturation Weight')
 plt.xticks([]), plt.yticks([])  # to hide tick values on X and Y axis
+
+plt.figure('Step 1: image to white balanced version')
+plt.imshow(image_and_white_balanced)
+plt.title('Original Image, White Balanced Imaage')
+plt.xticks([]), plt.yticks([])
+
+plt.figure('Step 2: generate two input')
+plt.imshow(two_input)
+plt.title('White Balanced, Unsharp Masked, Gamma Corrected')
+plt.xticks([]), plt.yticks([])
+
+plt.figure('Step 3: gamma input weighted')
+plt.imshow(gamma_weights)
+plt.title('Gamma Corrected, Laplacian Weight, Saliency Weight, Saturation Weight')
+plt.xticks([]), plt.yticks([])
+
 plt.show()
 
 # img[:, :, 0] = 0  #setting green channel to zero
