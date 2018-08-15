@@ -148,38 +148,38 @@ def saturation_weight(img):
     image = cv2.cvtColor(lab_image, cv2.COLOR_YCrCb2BGR)
     return image
 
+
 def weight_adder(input):
-    weight_sum=input.copy()
+    weight_sum = input.copy()
     input1 = input.copy()
-    lap=laplacian_weight(input1)
-    sal=saliency_weight(input1)
-    sat=saturation_weight(input1)
+    lap = laplacian_weight(input1)
+    sal = saliency_weight(input1)
+    sat = saturation_weight(input1)
 
     # weight_sum=cv2.add(lap, sal)
     # weight_sum = cv2.add(weight_sum, sat, weight_sum.type())
     #
-    weight_sum[:, :, 0]=(lap[:, :, 0]+sal[:, :, 0]+sat[:, :, 0])
+    weight_sum[:, :, 0] = (lap[:, :, 0] + sal[:, :, 0] + sat[:, :, 0])
     weight_sum[:, :, 1] = (lap[:, :, 1] + sal[:, :, 1] + sat[:, :, 1])
     weight_sum[:, :, 2] = (lap[:, :, 2] + sal[:, :, 2] + sat[:, :, 2])
 
+    # weight_sum=cv2.addWeighted(lap, 1.0, sal, 1.0)
+    # weight_sum=cv2.addWeighted(weight_sum, 1, sat, 1)
 
-    #weight_sum=cv2.addWeighted(lap, 1.0, sal, 1.0)
-    #weight_sum=cv2.addWeighted(weight_sum, 1, sat, 1)
-
-    #cv2.divide(input1, weight_sum, input1)
+    # cv2.divide(input1, weight_sum, input1)
 
     # input1[:, :, 0] = (input1[:, :, 0])
     # input1[:, :, 1] = (input1[:, :, 1])
     # input1[:, :, 2] = (input1[:, :, 2])
 
-    #cv2.normalize(weight_sum, weight_sum, 0, 255, cv2.NORM_L1)
+    # cv2.normalize(weight_sum, weight_sum, 0, 255, cv2.NORM_L1)
 
     return weight_sum
 
 
 def adder(image1, image2):
-    src=image1.copy()
-    dst=image2.copy()
+    src = image1.copy()
+    dst = image2.copy()
     # dst[:, :, 0]=dst[:, :, 0]+src[:, :, 0]
     # dst[:, :, 1]=dst[:, :, 1]+src[:, :, 1]
     # dst[:, :, 2] = dst[:, :, 2] + src[:, :, 2]
@@ -188,13 +188,32 @@ def adder(image1, image2):
 
 
 def normal_fusion(gamma, gamma_w, unsharp, unsharp_w):
-    #basic_fusion
-    im1=cv2.multiply(gamma, gamma_w)
-    im2=cv2.multiply(unsharp, unsharp_w)
+    # basic_fusion
+    im1 = cv2.multiply(gamma, gamma_w)
+    im2 = cv2.multiply(unsharp, unsharp_w)
 
-    res=cv2.add(im1, im2)
+    res = cv2.add(im1, im2)
 
     return res
+
+
+def multi_fusion(gamma, gamma_w, unsharp, unsharp_w):
+    # basic_fusion
+    im1 = cv2.multiply(gamma, gamma_w)
+    im2 = cv2.multiply(unsharp, unsharp_w)
+
+    res = cv2.add(im1, im2)
+
+    return res
+
+
+def gaussian_pyramid():
+    return
+
+
+def laplacian_pyramid():
+    return
+
 
 white_balanced = white_balance_with_ancuti(img)
 gamma_adjusted = adjust_gamma(white_balanced, gamma=0.5)
@@ -206,18 +225,18 @@ gamma_weights = np.hstack((gamma_adjusted, laplacian_weight(gamma_adjusted), sal
 unsharp_weights = np.hstack((unsharp_masked, laplacian_weight(unsharp_masked), saliency_weight(unsharp_masked),
                              saturation_weight(unsharp_masked)))
 
-weighted_gamma=weight_adder(gamma_adjusted)
-weighted_unsharped=weight_adder(unsharp_masked)
-added_ga_un=cv2.add(weighted_gamma, weighted_unsharped)
+weighted_gamma = weight_adder(gamma_adjusted)
+weighted_unsharped = weight_adder(unsharp_masked)
+added_ga_un = cv2.add(weighted_gamma, weighted_unsharped)
 
-first_w=cv2.divide(weighted_gamma, added_ga_un)
-second_w=cv2.divide(weighted_unsharped, added_ga_un)
+first_w = cv2.divide(weighted_gamma, added_ga_un)
+second_w = cv2.divide(weighted_unsharped, added_ga_un)
 
-nor_f=normal_fusion(gamma_adjusted, first_w, unsharp_masked, second_w)
+nor_f = normal_fusion(gamma_adjusted, first_w, unsharp_masked, second_w)
 
-weighted_singular=np.hstack(( weighted_gamma, weighted_unsharped, added_ga_un ))
+weighted_singular = np.hstack((weighted_gamma, weighted_unsharped, added_ga_un))
 
-merging_final=np.hstack(( img, nor_f ))
+merging_final = np.hstack((img, nor_f))
 
 # final = white_balance(img)
 
@@ -235,7 +254,6 @@ plt.figure('Step 6: merging final two')
 plt.imshow(merging_final)
 plt.title('Final')
 plt.xticks([]), plt.yticks([])
-
 
 plt.figure('Step 1: image to white balanced version')
 plt.imshow(image_and_white_balanced)
@@ -261,8 +279,6 @@ plt.figure('Step 5: weighted into one image')
 plt.imshow(weighted_singular)
 plt.title('Gamma Weighted, Unsharp Weighted, Total Weighted')
 plt.xticks([]), plt.yticks([])
-
-
 
 plt.show()
 
