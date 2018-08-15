@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-img = cv2.imread('for_science1.jpg')
+img = cv2.imread('im2.jpg')
 
 
 def ancuti_journal(im):
@@ -234,7 +234,7 @@ second_w = cv2.divide(weighted_unsharped, added_ga_un)
 
 nor_f = normal_fusion(gamma_adjusted, first_w, unsharp_masked, second_w)
 
-weighted_singular = np.hstack((first_w, weighted_unsharped, added_ga_un))
+weighted_singular = np.hstack((weighted_gamma, weighted_unsharped, added_ga_un))
 
 merging_final = np.hstack((img, nor_f))
 
