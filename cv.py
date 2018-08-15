@@ -186,6 +186,16 @@ def adder(image1, image2):
     cv2.add(src, dst, dst)
     return dst
 
+
+def normal_fusion(gamma, gamma_w, unsharp, unsharp_w):
+    #basic_fusion
+    im1=cv2.multiply(gamma, gamma_w)
+    im2=cv2.multiply(unsharp, unsharp_w)
+
+    res=cv2.add(im1, im2)
+
+    return res
+
 white_balanced = white_balance_with_ancuti(img)
 gamma_adjusted = adjust_gamma(white_balanced, gamma=0.5)
 unsharp_masked = unsharp_masking(white_balanced)
@@ -203,8 +213,11 @@ added_ga_un=cv2.add(weighted_gamma, weighted_unsharped)
 first_w=cv2.divide(weighted_gamma, added_ga_un)
 second_w=cv2.divide(weighted_unsharped, added_ga_un)
 
+nor_f=normal_fusion(gamma_adjusted, first_w, unsharp_masked, second_w)
 
 weighted_singular=np.hstack(( weighted_gamma, weighted_unsharped, added_ga_un ))
+
+merging_final=np.hstack(( img, nor_f ))
 
 # final = white_balance(img)
 
@@ -218,9 +231,9 @@ two_input = two_input[:, :, ::-1]
 gamma_weights = gamma_weights[:, :, ::-1]
 unsharp_weights = unsharp_weights[:, :, ::-1]
 
-plt.figure('Step 5: weighted into one image')
-plt.imshow(weighted_singular)
-plt.title('Gamma Weighted, Unsharp Weighted, Total Weighted')
+plt.figure('Step 6: merging final two')
+plt.imshow(merging_final)
+plt.title('Final')
 plt.xticks([]), plt.yticks([])
 
 
@@ -243,6 +256,12 @@ plt.figure('Step 4: unsharp input weighted')
 plt.imshow(unsharp_weights)
 plt.title('Unsharp Masked, Laplacian Weight, Saliency Weight, Saturation Weight')
 plt.xticks([]), plt.yticks([])  # to hide tick values on X and Y axis
+
+plt.figure('Step 5: weighted into one image')
+plt.imshow(weighted_singular)
+plt.title('Gamma Weighted, Unsharp Weighted, Total Weighted')
+plt.xticks([]), plt.yticks([])
+
 
 
 plt.show()
