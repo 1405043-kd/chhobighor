@@ -1,8 +1,9 @@
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
+from numpy.core.tests.test_mem_overlap import xrange
 
-img = cv2.imread('im2.jpg')
+img = cv2.imread('for_science3.jpg')
 
 
 def ancuti_journal(im):
@@ -196,23 +197,211 @@ def normal_fusion(gamma, gamma_w, unsharp, unsharp_w):
 
     return res
 
+#/////////////////////////////////////////////////////////////////////////////attempt failed\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#
+# def gaussian_pyramid(image):
+#     # generate Gaussian pyramid
+#     G = image.copy()
+#     gpB = [G]
+#     for i in xrange(3):
+#         G = cv2.pyrDown(G)
+#         gpB.append(G)
+#     return gpB
+#
+#
+# def laplacian_pyramid(image):
+#     gpB = gaussian_pyramid(image)
+#     # generate Laplacian Pyramid
+#     lpB = [gpB[2]]
+#     for i in xrange(2, 0, -1):
+#         GE = cv2.pyrUp(gpB[i])
+#         L = cv2.subtract(gpB[i - 1], GE)
+#         lpB.append(L)
+#     return lpB
+#
+#
+# def pyr_reconstruct(LS):
+#     # now reconstruct
+#     ls_ = LS[0]
+#     for i in xrange(1, 3):
+#         ls_ = cv2.pyrUp(ls_)
+#         ls_ = cv2.add(ls_, LS[i])
+#
+#
+# def fusion_multi(image1, w1, image2, w2):
+#     # #lap_1=laplacian_weight(image1)
+#     # gau_1=gaussian_pyramid(w1)
+#     # #lap_2=laplacian_weight(image2)
+#     # gau_2=gaussian_pyramid(w2)
+#     #
+#     # b1, g1, r1 = cv2.split(image1)
+#     # b2, g2, r2 = cv2.split(image2)
+#     #
+#     #
+#     #
+#     # #
+#     # lap_b1=laplacian_weight(b1)
+#     # lap_g1=laplacian_weight(g1)
+#     # lap_r1 = laplacian_weight(r1)
+#     #
+#     # lap_b2 = laplacian_weight(b2)
+#     # lap_g2 = laplacian_weight(g2)
+#     # lap_r2 = laplacian_weight(r2)
+#     #
+#     #
+#     # f_b1 = lap_b1[0] * gau_1[0][:, :, 0]+ lap_b2[0] * gau_2[0][:, :, 0]
+#     # f_b2 = lap_b1[1] * gau_1[0][:, :, 0] + lap_b2[1] * gau_2[0][:, :, 0]
+#     # f_b3 = lap_b1[2] * gau_1[0][:, :, 0] + lap_b2[2] * gau_2[0][:, :, 0]
+#     #
+#     # f_g1 = (lap_g1[0] * gau_1[0][:, :, 1] + lap_g2[0] * gau_2[0][:, :, 1])
+#     # #f_g2 = (lap_g1[1] * gau_1[0][:, :, 1]+ lap_g2[1] * gau_2[0][:, :, 1])
+#     # #f_g3 =  (lap_g1[2] * gau_1[0][:, :, 1]+ lap_b2[2] * gau_2[0][:, :, 1])
+#     #
+#     # f_r1 = (lap_r1[0] * gau_1[0][:, :, 2]+ lap_r2[0] * gau_2[0][:, :, 2])
+#     # #f_r2 = (lap_g1[1] * gau_1[0][:, :, 2]+ lap_g2[1] * gau_2[0][:, :, 2])
+#     # #f_r3 = (lap_g1[2] * gau_1[0][:, :, 2]+ lap_b2[2] * gau_2[0][:, :, 2])
+#     #
+#     # bf= f_b1 #+f_b2+f_b3
+#     # gf= f_g1 #+f_g2+f_g3
+#     # rf= f_r1 #+f_r2+f_r3
+#     #
+#     # foo = cv2.merge((bf, gf, rf))
+#
+#     w2 = cv2.GaussianBlur(w2, (3, 3), 3)
+#     w1 = laplacian_weight(w1)
+#
+#     w2 = np.uint8(w2)
+#     w1 = np.uint8(w1)
+#
+#     foo = w1 * image1
+#     bar = w2 * image2
+#
+#     # G = lap_2[0]*gau_2[0]
+#     # im2 = G.copy()
+#     # for i in xrange(1,3):
+#     #     G = lap_2[i]*gau_2[i]
+#     #     im2 =cv2.add(G, im2)
+#     #
+#     # return lap_2[0][:, :, 0]
+#     return foo + bar
 
-def multi_fusion(gamma, gamma_w, unsharp, unsharp_w):
-    # basic_fusion
-    im1 = cv2.multiply(gamma, gamma_w)
-    im2 = cv2.multiply(unsharp, unsharp_w)
-
-    res = cv2.add(im1, im2)
-
-    return res
+#/////////////////////////////////////////////////////////////////////////////attempt failed\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-def gaussian_pyramid():
-    return
 
 
-def laplacian_pyramid():
-    return
+#/////////////////////////////////////////////////////////////////////////////attempt failed\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+# def filter_mask(im):
+#     h = [1.0 / 16.0, 4.0 / 16.0, 6.0 / 16.0, 4.0 / 16.0, 1.0 / 16.0]
+#     print(h)
+#     image = np.zeros((h.__len__(), h.__len__()), im.dtype)
+#     for i in range(h.__len__()):
+#         for j in range(h.__len__()):
+#             image[i][j] = h[i] * h[j]
+#
+#     return image
+#
+#
+# def build_gaussian_p(image, level):
+#     mask = filter_mask(image)
+#     tmp = cv2.filter2D(image, -1, mask)
+#     gauss_pyr = [tmp]
+#     tmp_img = image.copy()
+#
+#     for i in xrange(1, level):
+#         #print(i)
+#         cv2.resize(tmp_img, (0, 0), tmp_img, 0.5, 0.5, cv2.INTER_LINEAR)
+#
+#         tmp = cv2.filter2D(tmp_img, -1, mask)
+#         gauss_pyr.append(tmp.copy())
+#
+#     return gauss_pyr
+#
+#
+# def build_lap_pyramid(image, level):
+#     lap_pyr = [image.copy()]
+#     tmp_img = image.copy()
+#
+#     for i in xrange(1, level):
+#         cv2.resize(tmp_img, (0, 0), tmp_img, 0.5, 0.5, cv2.INTER_LINEAR)
+#         lap_pyr.append(tmp_img.copy())
+#
+#     for i in xrange(level - 1):
+#         # print(i)
+#         tmp_pyr = tmp_img
+#         cv2.resize(lap_pyr[i + 1], lap_pyr[i].shape[:2], tmp_pyr, 0, 0, cv2.INTER_LINEAR)
+#         cv2.subtract(lap_pyr[i], tmp_pyr, lap_pyr[i])
+#     return lap_pyr
+#
+#
+# def reconstruct_laplacian_pyr(pyramid):
+#     level = len(pyramid)
+#
+#     for i in xrange(level - 1, 0, -1):
+#         tmp_pyr = pyramid[i]
+#         cv2.resize(pyramid[i], pyramid[i - 1].shape[:2], tmp_pyr, 0, 0, cv2.INTER_LINEAR)
+#         cv2.add(pyramid[i - 1], tmp_pyr, pyramid[i - 1])
+#
+#     return pyramid[0]
+#
+#
+# def fuse_two_image(wa1, im1, wa2, im2, level):
+#     img1 = im1.copy()
+#     img2 = im2.copy()
+#     w1 = wa1.copy()
+#     w2 = wa2.copy()
+#     weight1 = build_gaussian_p(w1, level)
+#     weight2 = build_gaussian_p(w2, level)
+#
+#     # img1 = np.float32(img1)
+#     # img2 = np.float32(img2)
+#
+#     b, g, r = cv2.split(img1)
+#     blue_channel_1 = build_lap_pyramid(b, level)
+#     green_channel_1 = build_lap_pyramid(g, level)
+#     red_channel_1 = build_lap_pyramid(r, level)
+#
+#     b2, g2, r2 = cv2.split(img2)
+#
+#     blue_channel_2 = build_lap_pyramid(b2, level)
+#     green_channel_2 = build_lap_pyramid(g2, level)
+#     red_channel_2 = build_lap_pyramid(r2, level)
+#
+#     blue_channel = []
+#     green_channel = []
+#     red_channel = []
+#     # ans= blue_channel_1[0]* weight1[0][:, :, 0]
+#     for i in xrange(level):
+#         cn = cv2.add(blue_channel_1[i] * weight1[i][:, :, i], blue_channel_2[i] * weight2[i][:, :, i])
+#         blue_channel.append(cn.copy())
+#         cn = cv2.add(green_channel_1[i] * weight1[i][:, :, i], green_channel_2[i] * weight2[i][:, :, i])
+#         green_channel.append(cn.copy())
+#         cn = cv2.add(red_channel_1[i] * weight1[i][:, :, i], red_channel_2[i] * weight2[i][:, :, i])
+#         red_channel.append(cn.copy())
+#
+#     b_c = reconstruct_laplacian_pyr(blue_channel)
+#     g_c = reconstruct_laplacian_pyr(green_channel)
+#     r_c = reconstruct_laplacian_pyr(red_channel)
+#
+#     fin = cv2.merge((b_c, g_c, r_c))
+#
+#
+#     return fin
+
+
+#/////////////////////////////////////////////////////////////////////////////attempt failed\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+def fuse_two_image_too_naive(wa1, im1, wa2, im2):
+    img1 = im1.copy()
+    img2 = im2.copy()
+    w1 = wa1.copy()
+    w2 = wa2.copy()
+
+    cv2.addWeighted(img1, 1, w1, 1, .25, img1)
+    cv2.addWeighted(img2, 1, w2, 1, .25, img2)
+    cv2.addWeighted(img1, 1, img2, .25, 0.25, img1)
+    return img1
 
 
 white_balanced = white_balance_with_ancuti(img)
@@ -227,7 +416,7 @@ unsharp_weights = np.hstack((unsharp_masked, laplacian_weight(unsharp_masked), s
 
 weighted_gamma = weight_adder(gamma_adjusted)
 weighted_unsharped = weight_adder(unsharp_masked)
-added_ga_un = cv2.add(weighted_gamma, weighted_unsharped)
+added_ga_un = cv2.addWeighted(weighted_gamma, 1, weighted_unsharped, 1, 0.1)
 
 first_w = cv2.divide(weighted_gamma, added_ga_un)
 second_w = cv2.divide(weighted_unsharped, added_ga_un)
@@ -236,7 +425,13 @@ nor_f = normal_fusion(gamma_adjusted, first_w, unsharp_masked, second_w)
 
 weighted_singular = np.hstack((weighted_gamma, weighted_unsharped, added_ga_un))
 
-merging_final = np.hstack((img, nor_f))
+#mul_f = fuse_two_image(first_w, gamma_adjusted, second_w, unsharp_masked, 3)
+
+mul_f = fuse_two_image_too_naive(first_w, gamma_adjusted, second_w, unsharp_masked)
+
+# mul_f = build_lap_pyramid(unsharp_masked, 3)
+#m = reconstruct_laplacian_pyr(mul_f)
+merging_final = np.hstack((img, mul_f))
 
 # final = white_balance(img)
 
@@ -249,13 +444,12 @@ image_and_white_balanced = image_and_white_balanced[:, :, ::-1]
 two_input = two_input[:, :, ::-1]
 gamma_weights = gamma_weights[:, :, ::-1]
 unsharp_weights = unsharp_weights[:, :, ::-1]
-weighted_singular =weighted_singular[:, :, ::-1]
+weighted_singular = weighted_singular[:, :, ::-1]
 merging_final = merging_final[:, :, ::-1]
 
-
-plt.figure('Step 6: merging final two')
+plt.figure('Step 6: merged weight adjusted two inputs')
 plt.imshow(merging_final)
-plt.title('Final')
+plt.title('Original Image, Processed Final Image')
 plt.xticks([]), plt.yticks([])
 
 plt.figure('Step 1: image to white balanced version')
