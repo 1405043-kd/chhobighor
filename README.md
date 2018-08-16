@@ -1,5 +1,5 @@
 # Underwater Image Enhancement
-# this is a similar implementation of this paper, https://ieeexplore.ieee.org/document/8058463/
+# this is an almost similar implementation of this paper, https://ieeexplore.ieee.org/document/8058463/
 
 The whole process is roughly 5 major steps.
 
