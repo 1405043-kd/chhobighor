@@ -4,7 +4,7 @@ cv.py file contains the coding portion. Sample images are also provided. To run 
 
 # this is an almost similar implementation of this paper, https://ieeexplore.ieee.org/document/8058463/
 
-The whole process is roughly 5 major steps.
+The whole process contains roughly 5 major steps.
 
 In step 1, the underwater image is white balanced by compensating red and blue channels.
 
