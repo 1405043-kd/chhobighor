@@ -3,7 +3,7 @@ import cv2
 from matplotlib import pyplot as plt
 from numpy.core.tests.test_mem_overlap import xrange
 
-img = cv2.imread('for_science3.jpg')
+img = cv2.imread('for_science10.jpg')
 
 
 def ancuti_journal(im):
