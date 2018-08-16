@@ -1,4 +1,7 @@
 # Underwater Image Enhancement
+
+cv.py file contains the coding portion. Sample images are also provided. To run the cv.py in your local machine give an underwater image path as input at 6th line.  
+
 # this is an almost similar implementation of this paper, https://ieeexplore.ieee.org/document/8058463/
 
 The whole process is roughly 5 major steps.
