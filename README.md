@@ -23,3 +23,8 @@ each of the two aggregated weights.
 
 In step 5, according to the paper multi-scale pyramid based fusion is used. However, to reduce complexity, here a weighted sum of the inputs and generated 
 weights has been implemented. 
+
+
+![processed_output_6](processed_output_6.png)
+![processed_output_4](processed_output_4.png)
+![processed_output_10](processed_output_10.png)
